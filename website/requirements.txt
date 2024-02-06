@@ -3,5 +3,4 @@ streamlit==1.31.0
 yfinance==0.2.32
 matplotlib==3.8.2
 pillow==10.0.0
-patsy
-xlsxwriter
+xlsxwriter==3.1.9
