@@ -1,8 +1,7 @@
 import streamlit as st  # Importing streamlit for web application
 import yfinance as yf  # Yfinance was used to fetch bond yields and closing prices
-import pandas as pd# 'Pandas' was used to process data and create dataframes for visualizations.
+import pandas as pd  # 'Pandas' was used to process data and create dataframes for visualizations.
 import io
-
 
 st.set_page_config(page_title='Savings & Investments', page_icon=':chart:', layout='wide')  # Basic page layout
 
@@ -111,53 +110,36 @@ def growth(time, value_list):
         st.write('Please make sure inputs are correct. (list length error)')
 
 
-def download_excel(df):
-    # Using openpyxl for Excel export
-    import openpyxl
+def output(file_type):
+    """
+    This function is used to create a file based on the input user chooses.
+    it can either be Exel, JSON, Stata or CSV.
+    This file is saved to the same directory as the program.
+    Returns nothing but a printed statement.
+     ------------------------------
+     Arguments:
+        file_type: the output type of the file
+     """
+    # Creating a dictionary with options as keys and their extensions as values.
+    # Modify the dictionary to add more formats as required
+    extensions = {'Excel': '.xlsx', 'Stata': '.dta', 'JSON': '.json', 'CSV': '.csv'}
+    name = st.text_input('Please enter the name of the file', key='file_name', value=None)
 
-    buffer = io.BytesIO()
-    writer = pd.ExcelWriter(buffer, engine='openpyxl')
-    df.to_excel(writer, index=False)
-    writer.save()
-    buffer.seek(0)
-
-    download_file(buffer.getvalue(), 'my_data.xlsx', 'application/vnd.ms-excel')
-
-def download_dta(df):
-    import patsy
-    import io
-
-    with io.BytesIO() as buffer:
-        patsy.dtawrite(df, buffer)
-        buffer.seek(0)
-
-        download_file(buffer.getvalue(), 'my_data.dta', 'application/x-stata')
-
-def download_csv(df):
-    buffer = io.StringIO()
-    df.to_csv(buffer, index=False)
-    buffer.seek(0)
-
-    download_file(buffer.getvalue().encode('utf-8'), 'my_data.csv', 'text/csv')
-
-def download_json(df):
-    buffer = io.StringIO()
-    df.to_json(buffer, orient='records')
-    buffer.seek(0)
-
-    download_file(buffer.getvalue().encode('utf-8'), 'my_data.json', 'application/json')
-
-def download_file(data, filename, mimetype):
-    st.download_button(
-        label="Download",
-        data=data,
-        file_name=filename,
-        mime_type=mimetype,
-        key=filename  # Ensures unique download link every time
-    )
-
-
-
+    # This if statement helps prevent concatenation errors
+    if name is not None:
+        try:
+            name = name+extensions[file_type]
+            if extensions[file_type] == '.xlsx':
+                data_set.to_excel(name, index=False)
+            elif extensions[file_type] == '.dta':
+                data_set.to_stata(name, write_index=False)
+            elif extensions[file_type] == '.json':
+                data_set.to_json(name)
+            elif extensions[file_type] == '.csv':
+                data_set.to_csv(name)
+            st.write('The file should now be stored in the same directory as this program')
+        except KeyError:
+            st.write('Please choose a format from the options in the select box.')
 
 
 st.title('Savings & Investments')
@@ -227,20 +209,34 @@ elif choice == 'Lower':
         st.bar_chart(data_set, x='Month', y='Principle')
         st.bar_chart(data_set, x='Month', y='Interest')
         st.bar_chart(data_set, x='Month', y='Retirement Fund Value')
+        export = st.selectbox('How would you like to export this table?',
+                              ['Excel', 'Stata', 'JSON', 'CSV'], index=None, key='export')
 
-        selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
-
-        if selected_format == 'Excel':
-            download_excel(df=data_set)
-        elif selected_format == 'DTA':
-            download_dta(df=data_set)
-        elif selected_format == 'CSV':
-            download_csv(df=data_set)
-        elif selected_format == 'JSON':
-            download_json(df=data_set)
+        if export is not None:
+            output(export)
         if "budget" in st.session_state:
             st.subheader("Add these monthly savings to your current budget outflows?")
             if st.button("Add savings"):
                 st.session_state["budget"].createCashFlow(-round(monthly_principle[0], 2), st.session_state["budget"].getStart(), st.session_state["budget"].getEnd(), "My Low-Risk Savings", 31, "m")
                 st.write("Added savings")
 
+
+
+buffer = io.BytesIO()
+
+# Create some Pandas dataframes from some data.
+
+# Create a Pandas Excel writer using XlsxWriter as the engine.
+with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+    # Write each dataframe to a different worksheet.
+    data_set.to_excel(writer, sheet_name='Sheet1')
+
+    # Close the Pandas Excel writer and output the Excel file to the buffer
+    writer.save()
+
+    st.download_button(
+        label="Download Excel worksheets",
+        data=buffer,
+        file_name="pandas_multiple.xlsx",
+        mime="application/vnd.ms-excel"
+    )
