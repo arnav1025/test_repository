@@ -124,16 +124,14 @@ def download_excel(df):
     download_file(buffer.getvalue(), 'my_data.xlsx', 'application/vnd.ms-excel')
 
 def download_dta(df):
-    # Using the 'stata' library for DTA export
-    import stata
+    import patsy
+    import io
 
-    with open('my_data.dta', 'wb') as f:
-        stata.write_stata(df, f)
+    with io.BytesIO() as buffer:
+        patsy.dtawrite(df, buffer)
+        buffer.seek(0)
 
-    with open('my_data.dta', 'rb') as f:
-        file_data = f.read()
-
-    download_file(file_data, 'my_data.dta', 'application/x-stata')
+        download_file(buffer.getvalue(), 'my_data.dta', 'application/x-stata')
 
 def download_csv(df):
     buffer = io.StringIO()
