@@ -213,7 +213,22 @@ elif choice == 'Lower':
                               ['Excel', 'Stata', 'JSON', 'CSV'], index=None, key='export')
 
         if export is not None:
-            output(export)
+            buffer = io.BytesIO()
+            # Create some Pandas dataframes from some data.
+            # Create a Pandas Excel writer using XlsxWriter as the engine.
+            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                # Write each dataframe to a different worksheet.
+                data_set.to_excel(writer, sheet_name='Sheet1')
+
+                # Close the Pandas Excel writer and output the Excel file to the buffer
+                writer.save()
+
+                st.download_button(
+                    label="Download Excel worksheets",
+                    data=buffer,
+                    file_name="pandas_multiple.xlsx",
+                    mime="application/vnd.ms-excel"
+    )
         if "budget" in st.session_state:
             st.subheader("Add these monthly savings to your current budget outflows?")
             if st.button("Add savings"):
@@ -222,21 +237,3 @@ elif choice == 'Lower':
 
 
 
-buffer = io.BytesIO()
-
-# Create some Pandas dataframes from some data.
-
-# Create a Pandas Excel writer using XlsxWriter as the engine.
-with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-    # Write each dataframe to a different worksheet.
-    data_set.to_excel(writer, sheet_name='Sheet1')
-
-    # Close the Pandas Excel writer and output the Excel file to the buffer
-    writer.save()
-
-    st.download_button(
-        label="Download Excel worksheets",
-        data=buffer,
-        file_name="pandas_multiple.xlsx",
-        mime="application/vnd.ms-excel"
-    )
