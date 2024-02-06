@@ -6,7 +6,7 @@ import uuid
 st.set_page_config(page_title='MIS20080', page_icon=':bar_chart:', layout='wide')
 
 
-st.title(' MIS20080 Group Project ')
+st.title(' Investment and Budget Calculator ')
 st.markdown("<hr><br>", unsafe_allow_html=True)
 st.subheader('''You can create a budget on this tab, then switch to the Budget Viewer tab to visualise your budget, or go to the Savings & Investment tab to explore savings options.''')
 
