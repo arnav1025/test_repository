@@ -129,16 +129,16 @@ def output(file_type):
         try:
             name = name+extensions[file_type]
             if extensions[file_type] == '.xlsx':
-                data_set.to_excel(name, index=False)
+                file = data_set.to_excel(name, index=False)
             elif extensions[file_type] == '.dta':
-                data_set.to_stata(name, write_index=False)
+                file = data_set.to_stata(name, write_index=False)
             elif extensions[file_type] == '.json':
-                data_set.to_json(name)
+                file = data_set.to_json(name)
             elif extensions[file_type] == '.csv':
-                data_set.to_csv(name)
-            st.write('The file should now be stored in the same directory as this program')
-        except KeyError:
-            st.write('Please choose a format from the options in the select box.')
+                file = data_set.to_csv(name)
+            st.download_button(label="Click to download",
+            data =file, file_name= name)
+
 
 
 st.title('Savings & Investments')
@@ -213,6 +213,7 @@ elif choice == 'Lower':
 
         if export is not None:
             output(export)
+
         if "budget" in st.session_state:
             st.subheader("Add these monthly savings to your current budget outflows?")
             if st.button("Add savings"):
