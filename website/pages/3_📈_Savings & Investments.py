@@ -129,14 +129,16 @@ def output(file_type):
         try:
             name = name+extensions[file_type]
             if extensions[file_type] == '.xlsx':
-                file = data_set.to_excel(name, index=False)
+                st.download_button(label="Click to download", data=data_set.to_excel(name), file_name=name)
             elif extensions[file_type] == '.dta':
-                file = data_set.to_stata(name, write_index=False)
+                st.download_button(label="Click to download", data=data_set.to_stata(name), file_name=name)
             elif extensions[file_type] == '.json':
-                file = data_set.to_json(name)
+                st.download_button(label="Click to download", data=data_set.to_json(name), file_name=name)
             elif extensions[file_type] == '.csv':
-                file = data_set.to_csv(name)
-        st.download_button(label="Click to download", data =file, file_name= name)
+                st.download_button(label="Click to download", data=data_set.to_csv(name), file_name=name)
+        except ValueError :
+            st.write('please enter a choice from the box')
+
 
 
 
