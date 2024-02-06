@@ -229,10 +229,7 @@ elif choice == 'Lower':
         st.bar_chart(data_set, x='Month', y='Principle')
         st.bar_chart(data_set, x='Month', y='Interest')
         st.bar_chart(data_set, x='Month', y='Retirement Fund Value')
-        export = st.selectbox('How would you like to export this table?',
-                              ['Excel', 'Stata', 'JSON', 'CSV'], index=None, key='export')
 
-        if export is not None:
             selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
 
             if selected_format == 'Excel':
