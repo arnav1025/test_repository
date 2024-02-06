@@ -2,6 +2,7 @@ import streamlit as st  # Importing streamlit for web application
 import yfinance as yf  # Yfinance was used to fetch bond yields and closing prices
 import pandas as pd  # 'Pandas' was used to process data and create dataframes for visualizations.
 import io
+import xlsxwriter
 
 st.set_page_config(page_title='Savings & Investments', page_icon=':chart:', layout='wide')  # Basic page layout
 

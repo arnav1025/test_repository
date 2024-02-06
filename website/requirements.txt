@@ -4,5 +4,5 @@ yfinance==0.2.32
 matplotlib==3.8.2
 pillow==10.0.0
 patsy
-openpyxl
+xlsxwriter
 io
