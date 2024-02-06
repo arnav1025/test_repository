@@ -230,7 +230,7 @@ elif choice == 'Lower':
         st.bar_chart(data_set, x='Month', y='Interest')
         st.bar_chart(data_set, x='Month', y='Retirement Fund Value')
 
-            selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
+        selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
 
             if selected_format == 'Excel':
                 download_excel(df=data_set)
