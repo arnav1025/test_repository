@@ -136,7 +136,7 @@ def output(file_type):
                 file = data_set.to_json(name)
             elif extensions[file_type] == '.csv':
                 file = data_set.to_csv(name)
-            st.download_button(label="Click to download", data =file, file_name= name)
+        st.download_button(label="Click to download", data =file, file_name= name)
 
 
 
