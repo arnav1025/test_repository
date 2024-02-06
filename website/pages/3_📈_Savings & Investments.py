@@ -232,14 +232,14 @@ elif choice == 'Lower':
 
         selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
 
-            if selected_format == 'Excel':
-                download_excel(df=data_set)
-            elif selected_format == 'DTA':
-                download_dta(df=data_set)
-            elif selected_format == 'CSV':
-                download_csv(df=data_set)
-            elif selected_format == 'JSON':
-                download_json(df=data_set)
+        if selected_format == 'Excel':
+            download_excel(df=data_set)
+        elif selected_format == 'DTA':
+            download_dta(df=data_set)
+        elif selected_format == 'CSV':
+            download_csv(df=data_set)
+        elif selected_format == 'JSON':
+            download_json(df=data_set)
         if "budget" in st.session_state:
             st.subheader("Add these monthly savings to your current budget outflows?")
             if st.button("Add savings"):
