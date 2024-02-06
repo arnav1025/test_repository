@@ -1,6 +1,8 @@
 import streamlit as st  # Importing streamlit for web application
 import yfinance as yf  # Yfinance was used to fetch bond yields and closing prices
-import pandas as pd  # 'Pandas' was used to process data and create dataframes for visualizations.
+import pandas as pd# 'Pandas' was used to process data and create dataframes for visualizations.
+import io
+
 
 st.set_page_config(page_title='Savings & Investments', page_icon=':chart:', layout='wide')  # Basic page layout
 
@@ -109,35 +111,52 @@ def growth(time, value_list):
         st.write('Please make sure inputs are correct. (list length error)')
 
 
-def output(file_type):
-    """
-    This function is used to create a file based on the input user chooses.
-    it can either be Exel, JSON, Stata or CSV.
-    This file is saved to the same directory as the program.
-    Returns nothing but a printed statement.
-     ------------------------------
-     Arguments:
-        file_type: the output type of the file
-     """
-    # Creating a dictionary with options as keys and their extensions as values.
-    # Modify the dictionary to add more formats as required
-    extensions = {'Excel': '.xlsx', 'Stata': '.dta', 'JSON': '.json', 'CSV': '.csv'}
-    name = st.text_input('Please enter the name of the file', key='file_name', value=None)
+def download_excel(df):
+    # Using openpyxl for Excel export
+    import openpyxl
 
-    # This if statement helps prevent concatenation errors
-    if name is not None:
-        try:
-            name = name+extensions[file_type]
-            if extensions[file_type] == '.xlsx':
-                st.download_button(label="Click to download", data=data_set, file_name=name)
-            elif extensions[file_type] == '.dta':
-                st.download_button(label="Click to download", data=data_set, file_name=name)
-            elif extensions[file_type] == '.json':
-                st.download_button(label="Click to download", data=data_set, file_name=name)
-            elif extensions[file_type] == '.csv':
-                st.download_button(label="Click to download", data=data_set, file_name=name)
-        except ValueError :
-            st.write('please enter a choice from the box')
+    buffer = io.BytesIO()
+    writer = pd.ExcelWriter(buffer, engine='openpyxl')
+    df.to_excel(writer, index=False)
+    writer.save()
+    buffer.seek(0)
+
+    download_file(buffer.getvalue(), 'my_data.xlsx', 'application/vnd.ms-excel')
+
+def download_dta(df):
+    # Using the 'stata' library for DTA export
+    import stata
+
+    with open('my_data.dta', 'wb') as f:
+        stata.write_stata(df, f)
+
+    with open('my_data.dta', 'rb') as f:
+        file_data = f.read()
+
+    download_file(file_data, 'my_data.dta', 'application/x-stata')
+
+def download_csv(df):
+    buffer = io.StringIO()
+    df.to_csv(buffer, index=False)
+    buffer.seek(0)
+
+    download_file(buffer.getvalue().encode('utf-8'), 'my_data.csv', 'text/csv')
+
+def download_json(df):
+    buffer = io.StringIO()
+    df.to_json(buffer, orient='records')
+    buffer.seek(0)
+
+    download_file(buffer.getvalue().encode('utf-8'), 'my_data.json', 'application/json')
+
+def download_file(data, filename, mimetype):
+    st.download_button(
+        label="Download",
+        data=data,
+        file_name=filename,
+        mime_type=mimetype,
+        key=filename  # Ensures unique download link every time
+    )
 
 
 
@@ -214,8 +233,16 @@ elif choice == 'Lower':
                               ['Excel', 'Stata', 'JSON', 'CSV'], index=None, key='export')
 
         if export is not None:
-            output(export)
+            selected_format = st.selectbox('Choose Download Format:', ['Excel', 'DTA', 'CSV', 'JSON'])
 
+            if selected_format == 'Excel':
+                download_excel(df=data_set)
+            elif selected_format == 'DTA':
+                download_dta(df=data_set)
+            elif selected_format == 'CSV':
+                download_csv(df=data_set)
+            elif selected_format == 'JSON':
+                download_json(df=data_set)
         if "budget" in st.session_state:
             st.subheader("Add these monthly savings to your current budget outflows?")
             if st.button("Add savings"):
