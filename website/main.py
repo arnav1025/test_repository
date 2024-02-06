@@ -3,7 +3,7 @@ import budget
 from datetime import date, timedelta
 import uuid
 
-st.set_page_config(page_title='MIS20080', page_icon=':bar_chart:', layout='wide')
+st.set_page_config(page_title='Investment and Budget Calculator', page_icon=':bar_chart:', layout='wide')
 
 
 st.title(' Investment and Budget Calculator ')
